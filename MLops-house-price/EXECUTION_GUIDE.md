@@ -10,6 +10,12 @@ Open PowerShell and move into the project root:
 cd C:\MLops-house-price
 ```
 
+On a MacBook, open Terminal and move into the project root:
+
+```bash
+cd ~/MLops-house-price
+```
+
 All commands should be run from this folder.
 
 ## 2. Activate the Virtual Environment
@@ -20,11 +26,25 @@ If the virtual environment already exists:
 .venv\Scripts\activate
 ```
 
+On a MacBook:
+
+```bash
+source .venv/bin/activate
+```
+
 If `.venv` does not exist on another machine:
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+On a MacBook:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -35,6 +55,12 @@ The virtual environment keeps this project's Python packages separate from syste
 ## 3. Run Tests
 
 ```powershell
+python -m pytest -q
+```
+
+On a MacBook:
+
+```bash
 python -m pytest -q
 ```
 
@@ -51,6 +77,12 @@ The tests check whether preprocessing and training pipeline components are worki
 ## 4. Train the Model
 
 ```powershell
+python -m src.train --experiment-name house-prices-local
+```
+
+On a MacBook:
+
+```bash
 python -m src.train --experiment-name house-prices-local
 ```
 
@@ -74,6 +106,12 @@ Explanation:
 uvicorn src.serve:app --host 127.0.0.1 --port 8000
 ```
 
+On a MacBook:
+
+```bash
+uvicorn src.serve:app --host 127.0.0.1 --port 8000
+```
+
 Keep this terminal running.
 
 Explanation:
@@ -88,6 +126,20 @@ Open a second PowerShell terminal:
 cd C:\MLops-house-price
 .venv\Scripts\activate
 Invoke-RestMethod http://127.0.0.1:8000/health
+```
+
+PowerShell with `curl`:
+
+```powershell
+curl.exe http://127.0.0.1:8000/health
+```
+
+On a MacBook:
+
+```bash
+cd ~/MLops-house-price
+source .venv/bin/activate
+curl http://127.0.0.1:8000/health
 ```
 
 Expected response should include:
@@ -111,6 +163,22 @@ Invoke-RestMethod `
   -Method Post `
   -ContentType "application/json" `
   -Body '{"data": [[8, 41.0, 6.6, 0.0, 3.4, 6.3, 2.0, 1.0]]}'
+```
+
+PowerShell with `curl`:
+
+```powershell
+curl.exe -X POST "http://127.0.0.1:8000/predict" `
+  -H "Content-Type: application/json" `
+  -d "{\"data\": [[8, 41.0, 6.6, 0.0, 3.4, 6.3, 2.0, 1.0]]}"
+```
+
+On a MacBook:
+
+```bash
+curl -X POST "http://127.0.0.1:8000/predict" \
+  -H "Content-Type: application/json" \
+  -d '{"data": [[8, 41.0, 6.6, 0.0, 3.4, 6.3, 2.0, 1.0]]}'
 ```
 
 Expected response will look similar to:
@@ -147,6 +215,14 @@ cd C:\MLops-house-price
 mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri ./mlruns --default-artifact-root ./mlruns
 ```
 
+On a MacBook:
+
+```bash
+cd ~/MLops-house-price
+source .venv/bin/activate
+mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri ./mlruns --default-artifact-root ./mlruns
+```
+
 Open this URL in your browser:
 
 ```text
@@ -178,10 +254,31 @@ Ctrl + C
 
 ## Quick Command Summary
 
+Windows PowerShell:
+
 ```powershell
 cd C:\MLops-house-price
 .venv\Scripts\activate
 python -m pytest -q
 python -m src.train --experiment-name house-prices-local
 uvicorn src.serve:app --host 127.0.0.1 --port 8000
+```
+
+MacBook Terminal:
+
+```bash
+cd ~/MLops-house-price
+source .venv/bin/activate
+python -m pytest -q
+python -m src.train --experiment-name house-prices-local
+uvicorn src.serve:app --host 127.0.0.1 --port 8000
+```
+
+API checks with `curl`:
+
+```bash
+curl http://127.0.0.1:8000/health
+curl -X POST "http://127.0.0.1:8000/predict" \
+  -H "Content-Type: application/json" \
+  -d '{"data": [[8, 41.0, 6.6, 0.0, 3.4, 6.3, 2.0, 1.0]]}'
 ```
