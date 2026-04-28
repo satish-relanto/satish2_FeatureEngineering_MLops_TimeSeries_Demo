@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  mlflow:
+    image: python:3.11-slim
+    container_name: mlflow_server
+    volumes:
+      - ./mlruns:/app/mlruns
+    working_dir: /app
+    command: sh -c "pip install mlflow==2.8.1 && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri file:///app/mlruns --default-artifact-root file:///app/mlruns"
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build: .
+    container_name: house_api
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_EXPERIMENT_NAME: house-prices-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    command: sh -c "python -m src.train --experiment-name house-prices-local && uvicorn src.serve:app --host 0.0.0.0 --port 8000"
+
